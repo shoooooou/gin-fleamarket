@@ -25,15 +25,22 @@ func main() {
 
 	// itemRepository := repositories.NewItemMemoryRepository(items)
 	itemRepository := repositories.NewItemRepository(db)
-
 	itemsService := services.NewItemService(itemRepository)
 	itemController := controllers.NewItemController(itemsService)
+
+	authRepository:=repositories.NewAuthRepository(db)
+	authService:=services.NewAuthService(authRepository)
+	authController:=controllers.NewAuthController(authService)
+
 	r := gin.Default()
 	itemRouter := r.Group("/items")
+	authRouter := r.Group("/auth")
 	itemRouter.GET("", itemController.FindAll)
 	itemRouter.GET("/:id", itemController.FindById)
 	itemRouter.POST("", itemController.Create)
 	itemRouter.PUT("/:id", itemController.Update)
 	itemRouter.DELETE("/:id", itemController.Delete)
+
+	authRouter.POST("/signup",authController.Signup)
 	r.Run("localhost:8080") // listen and serve on 0.0.0.0:8080
 }
